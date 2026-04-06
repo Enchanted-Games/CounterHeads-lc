@@ -1,0 +1,11 @@
+.vs/
+.idea/
+build/
+bin/
+obj/
+Releases/*
+Releases/*.*
+!Releases/build.bat
+CounterHeads.csproj.user
+*.DotSettings.user
+include/*.dll
