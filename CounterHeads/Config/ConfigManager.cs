@@ -2,9 +2,17 @@
 
 namespace CounterHeads.Config;
 
-public static class ConfigManager
+public class ConfigManager
 {
-    public static void RegisterConfig(ConfigFile config)
+    public ConfigEntry<bool> ExtendedLogging;
+    
+    public ConfigManager(ConfigFile config)
     {
+        ExtendedLogging = config.Bind(
+            "Debugging",
+            "Extended Logging",
+            false,
+            "Enable extra logging for debugging"
+        );
     }
 }

@@ -3,7 +3,7 @@ using Unity.Netcode;
 
 namespace CounterHeads.Networking;
 
-public class CoilDeathTimerMessages
+public static class CoilDeathTimerMessages
 {
     public const string ExplosionEffectToClientsMessage = "CounterHeads_ExplosionEffectToClients";
     
