@@ -44,4 +44,9 @@ public class CounterHeads : BaseUnityPlugin
 
         Logger.LogDebug("Finished unpatching!");
     }
+
+    public void LogInfoIfExtendedLogging(string message)
+    {
+        Logger.LogInfo(message);
+    }
 }

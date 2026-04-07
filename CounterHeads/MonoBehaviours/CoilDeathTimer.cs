@@ -1,36 +1,82 @@
 ﻿using System;
+using CounterHeads.Networking;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace CounterHeads.MonoBehaviours;
 
-public class CoilDeathTimer : MonoBehaviour
+public class CoilDeathTimer : NetworkBehaviour
 {
-    private float dieAt = -1;
-    private SpringManAI deadCoil;
+    private float _dieAt = -1;
+    private SpringManAI? _coil;
 
     public void SetDead(SpringManAI coil)
     {
-        this.dieAt = Time.fixedTime + 0.5f + (Random.value * 0.25f);
-        this.deadCoil = coil;
-        this.deadCoil.SetCoilheadOnCooldownServerRpc(true);
-        this.deadCoil.SetCoilheadOnCooldownClientRpc(true);
-        CounterHeads.Logger.LogMessage($"Coil died. time: {Time.fixedTime}, dieAt: {this.dieAt}");
+        if(!IsServer) return;
+        _coil = coil;
+        _dieAt = Time.fixedTime + 0.8f + (Random.value * 0.25f);
+        coil.SetCoilheadOnCooldownServerRpc(true);
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilDeathTimer::SetDead on server: {IsServer}");
     }
 
     public bool MarkedForDeath()
     {
-        return this.deadCoil != null && this.dieAt >= 0;
+        return _dieAt >= 0;
     }
 
     public void Update()
     {
-        if(this.dieAt < 0) return;
-        if(this.dieAt > Time.fixedTime) return;
-        this.dieAt = -1;
+        if(!IsServer) return;
+        if(!MarkedForDeath()) return;
+        if(_dieAt > Time.fixedTime) return;
+        if(_coil == null) return;
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilDeathTimer::Update on server: {IsServer}");
+
+        _dieAt = -1;
+        var pos = _coil.serverPosition;
+        _coil.KillEnemyOnOwnerClient(true);
+
+        const float killRange = 1f;
+        const float damageRange = 4f;
+        const int nonLethalDamage = 35;
+        const float physicsForce = 25f;
         
-        var pos = this.deadCoil.serverPosition;
-        this.deadCoil.KillEnemyOnOwnerClient(true);
-        Landmine.SpawnExplosion(pos, spawnExplosionEffect: true, killRange: 1f, damageRange: 4f, nonLethalDamage: 35, physicsForce: 25f);
+        SendExplosionEffectToClients(pos, killRange: killRange, damageRange: damageRange, nonLethalDamage: nonLethalDamage, physicsForce: physicsForce);
+    }
+
+    public static void SendExplosionEffectToClients(Vector3 pos, float killRange, float damageRange, int nonLethalDamage, float physicsForce)
+    {
+        var buffer = new FastBufferWriter(1024, Allocator.Temp);
+        buffer.WriteValue(pos);
+        buffer.WriteValue(killRange);
+        buffer.WriteValue(damageRange);
+        buffer.WriteValue(nonLethalDamage);
+        buffer.WriteValue(physicsForce);
+        NetworkManager.Singleton.CustomMessagingManager.SendNamedMessageToAll(CoilDeathTimerMessages.ExplosionEffectToClientsMessage, buffer);
+    }
+
+    public static void ReceiveExplosionEffectClient(ulong senderId, FastBufferReader data)
+    {
+        if (senderId != NetworkManager.ServerClientId)
+            return;
+        
+        try
+        {
+            data.ReadValue(out Vector3 pos);
+            data.ReadValue(out float killRange);
+            data.ReadValue(out float damageRange);
+            data.ReadValue(out int nonLethalDamage);
+            data.ReadValue(out float physicsForce);
+
+            CounterHeads.Instance.LogInfoIfExtendedLogging($"SendExplosionEffectToClients received: {pos} {killRange} {damageRange} {nonLethalDamage} {physicsForce}");
+            
+            Landmine.SpawnExplosion(pos, spawnExplosionEffect: true, killRange: killRange, damageRange: damageRange, nonLethalDamage: nonLethalDamage, physicsForce: physicsForce);
+        }
+        catch (Exception ex)
+        {
+            CounterHeads.Logger.LogError($"Exception during networking: {ex}");
+        }
     }
 }
