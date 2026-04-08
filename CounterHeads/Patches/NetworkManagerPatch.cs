@@ -12,17 +12,17 @@ internal class NetworkManagerPatch
     private static void AfterInitialize()
     {
         CounterHeads.Logger.LogInfo("Registering Messages");
-        CoilDeathTimerMessages.RegisterMessages();
+        Messages.RegisterGlobalMessages();
     }
-
+    
     [HarmonyPatch(typeof(GameNetworkManager), "SetInstanceValuesBackToDefault")]
     [HarmonyPostfix]
     public static void SetInstanceValuesBackToDefault()
     {
         if (NetworkManager.Singleton == null || NetworkManager.Singleton.CustomMessagingManager == null)
             return;
-
+    
         CounterHeads.Logger.LogInfo("Unregistering Messages");
-        CoilDeathTimerMessages.UnregisterMessages();
+        Messages.UnregisterGlobalMessages();
     }
 }

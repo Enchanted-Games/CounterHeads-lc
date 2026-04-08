@@ -11,10 +11,12 @@ public class SpringManAI_EnemyAIPatch
     [HarmonyPostfix]
     static void Awake_Postfix(EnemyAI __instance)
     {
-        SpringManAI? spring = __instance as SpringManAI;
-        if(spring == null) return;
+        SpringManAI? coil = __instance as SpringManAI;
+        if(coil == null) return;
         
         __instance.gameObject.AddComponent<CoilDeathTimer>();
+        var deathTimer = __instance.gameObject.GetComponent<CoilDeathTimer>();
+        deathTimer.SetCoil(coil);
     }
     
     [HarmonyPatch(nameof(EnemyAI.HitEnemy))]
@@ -30,7 +32,7 @@ public class SpringManAI_EnemyAIPatch
         
         CoilDeathTimer deathTimer = coil.GetComponent<CoilDeathTimer>();
         
-        if (coil.isEnemyDead || deathTimer.MarkedForDeath())
+        if (coil.isEnemyDead || deathTimer.MarkedForDeath() || coil.enemyHP < 0)
             return;
         if(!itemHitWith.itemProperties.itemName.ToLower().Equals("kitchen knife"))
             return;
@@ -45,7 +47,7 @@ public class SpringManAI_EnemyAIPatch
         if (deathTimer != null)
         {
             CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilPatch::HitPostfix on server: {__instance.IsServer}");
-            deathTimer.SetDead(coil);
+            deathTimer.SetDead();
         }
     }
 }
