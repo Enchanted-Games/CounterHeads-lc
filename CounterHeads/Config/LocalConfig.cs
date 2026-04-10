@@ -12,7 +12,7 @@ public class LocalConfig(ConfigFile config)
     public readonly ConfigEntry<int> CoilHealth = config.Bind(
         DamageSection,
         "Coilhead health",
-        3,
+        8,
         new ConfigDescription(
             "How much health coilheads spawn with. 3 is the vanilla default, so setting this value to 3 will not modify coilhead health. This is useful if, for example, you want to use the coilhead health from another mod instead of overriding it",
             new AcceptableValueRange<int>(1, 500)
@@ -22,7 +22,7 @@ public class LocalConfig(ConfigFile config)
     public readonly ConfigEntry<string> CoilWeapons = config.Bind(
         DamageSection,
         "Coilhead weapons",
-        "{\'kitchen knife\':1}",
+        "{\'kitchen knife\':3},{\'shotgun\':2}",
         "Configure which weapons can be used against coilheads and how much damage they should deal.\nEntries are surrounded by curly brackets {} and seperated by a comma. Each entry can contain either a weapon name like so: `{'shotgun'}` (in this case the default damage amount for that item will be used), or a weapon name and damage amount seperated by a colon, like so: `{'shotgun':2}`. Weapon names should be as they appear in the top right of the screen while holding them, if the weapon name contains a `:` or `'` character, you can escape them like so: `\\:` or `\\'`\n\nAn example config to make shovels deal 2 damage and knives deal 1 could look like this: `{'shovel':2},{'kitchen knife':1}`"
     );
     
