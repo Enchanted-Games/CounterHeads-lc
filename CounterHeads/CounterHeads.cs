@@ -69,8 +69,8 @@ public class CounterHeads : BaseUnityPlugin
 
     public void LogInfoIfExtendedLogging(string message)
     {
-        // if(!LocalConfig.ExtendedLogging.Value)
-        //     return;
+        if(!LocalConfig.ExtendedLogging.Value)
+            return;
         Logger.LogInfo(message);
     }
 }

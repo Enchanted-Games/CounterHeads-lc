@@ -24,8 +24,10 @@ public class WeaponMap : INetworkSerializable
 
     public static WeaponMap ParseWeaponConfig(string configString)
     {
+        const string colon = ":";
         const string colonEscape = "\\:";
         const string colonEscapeReplacement = "$_colonesc_$";
+        const string comma = ",";
         const string commaEscape = "\\,";
         const string commaEscapeReplacement = "$_commaesc_$";
         const string weaponsPattern = @"(?:\{'([^']*)'):([0-9]*)}|(?:\{'([^']*)'})";
@@ -46,6 +48,7 @@ public class WeaponMap : INetworkSerializable
             if (regexMatch.Groups[3].Success)
             {
                 string weaponName = regexMatch.Groups[3].Value;
+                weaponName = weaponName.Replace(commaEscapeReplacement, comma).Replace(colonEscapeReplacement, colon);
                 if(CheckIfWeaponAlreadyPresent(weapons, weaponName)) 
                 {
                     CounterHeads.Logger.LogWarning($"Weapon '{weaponName}' was listed multiple times in config, only the first entry will be used");
@@ -58,6 +61,7 @@ public class WeaponMap : INetworkSerializable
             else if (regexMatch.Groups[1].Success && regexMatch.Groups[2].Success)
             {
                 string weaponName = regexMatch.Groups[1].Value;
+                weaponName = weaponName.Replace(commaEscapeReplacement, comma).Replace(colonEscapeReplacement, colon);
                 if(CheckIfWeaponAlreadyPresent(weapons, weaponName)) 
                 {
                     CounterHeads.Logger.LogWarning($"Weapon '{weaponName}' was listed multiple times in config, only the first entry will be used");
