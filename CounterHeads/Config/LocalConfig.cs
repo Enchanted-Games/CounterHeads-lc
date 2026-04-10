@@ -2,7 +2,7 @@
 
 namespace CounterHeads.Config;
 
-public class ConfigManager(ConfigFile config)
+public class LocalConfig(ConfigFile config)
 {
     private const string DamageSection = "Damage";
     private const string BehaviourSection = "Behaviour";
@@ -12,15 +12,15 @@ public class ConfigManager(ConfigFile config)
     public readonly ConfigEntry<int> CoilHealth = config.Bind(
         DamageSection,
         "Coilhead health",
-        3,
+        5,
         "How much health coilheads spawn with. 3 is the vanilla default, so setting this value to 3 will not modify coilhead health. This is useful if, for example, you want to use the coilhead health from another mod instead of overriding it"
     );
     
     public readonly ConfigEntry<string> CoilWeapons = config.Bind(
         DamageSection,
         "Coilhead weapons",
-        "['kitchen knife',2]",
-        "Configure which weapons can be used against coilheads and how much damage they should deal.\nEntries are surrounded by square brackets [] and seperated by a comma. Each entry can contain either a weapon name like so: `['shotgun']`, or a weapon name and damage amount seperated by a colon, like so: `['shotgun':2]`. Weapon names should be as they appear in the top right of the screen while holding them, all in lower case\n\nAn example config to make shovels deal 2 damage and knives deal 1 could look like this: `['shovel':2],['kitchen knife':1]`"
+        "{\'kitchen knife\':2},{\'shotgun\':3}",
+        "Configure which weapons can be used against coilheads and how much damage they should deal.\nEntries are surrounded by curly brackets {} and seperated by a comma. Each entry can contain either a weapon name like so: `{'shotgun'}` (in this case the default damage amount for that item will be used), or a weapon name and damage amount seperated by a colon, like so: `{'shotgun':2}`. Weapon names should be as they appear in the top right of the screen while holding them, if the weapon name contains a `:` or `'` character, you can escape them like so: `\\:` or `\\'`\n\nAn example config to make shovels deal 2 damage and knives deal 1 could look like this: `{'shovel':2},{'kitchen knife':1}`"
     );
     
     // - Behaviour
@@ -34,7 +34,7 @@ public class ConfigManager(ConfigFile config)
     public readonly ConfigEntry<bool> CoilStunOnDeath = config.Bind(
         BehaviourSection,
         "Stun coilheads on death",
-        true,
+        false,
         "Whether or not coilheads should be stunned when dealing enough damage to them. If disabled, coilheads will still be able to chase you until they explode!\nOnly takes effect when 'Coilheads explode' is enabled"
     );
     
@@ -48,14 +48,14 @@ public class ConfigManager(ConfigFile config)
     public readonly ConfigEntry<double> MinTimeUntilExplosion = config.Bind(
         BehaviourSection,
         "Min time until explosion",
-        0.4d,
+        0.6d,
         "Minimum amount of time in seconds between dealing enough damage to a coilhead and it exploding\nOnly takes effect when 'Coilheads explode' is enabled"
     );
     
     public readonly ConfigEntry<double> MaxTimeUntilExplosion = config.Bind(
         BehaviourSection,
         "Max time until explosion",
-        0.7d,
+        1d,
         "Maximum amount of time in seconds between dealing enough damage to a coilhead and it exploding\nOnly takes effect when 'Coilheads explode' is enabled"
     );
     

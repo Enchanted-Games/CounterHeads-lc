@@ -12,7 +12,8 @@ namespace CounterHeads;
 public class CounterHeads : BaseUnityPlugin
 {
     public static CounterHeads Instance { get; private set; } = null!;
-    public static ConfigManager ConfigManager { get; private set; } = null!;
+    public static LocalConfig LocalConfig { get; private set; } = null!;
+    public static SyncedConfigManager SyncedConfig { get; private set; } = null!;
     internal new static ManualLogSource Logger { get; private set; } = null!;
     internal static Harmony? Harmony { get; set; }
 
@@ -23,9 +24,11 @@ public class CounterHeads : BaseUnityPlugin
         Logger = base.Logger;
         Instance = this;
 
-        ConfigManager = new ConfigManager(Config);
+        LocalConfig = new LocalConfig(Config);
         Patch();
         LoadAssets();
+
+        SyncedConfig = new SyncedConfigManager();
 
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
     }
@@ -66,8 +69,8 @@ public class CounterHeads : BaseUnityPlugin
 
     public void LogInfoIfExtendedLogging(string message)
     {
-        if(!ConfigManager.ExtendedLogging.Value)
-            return;
+        // if(!LocalConfig.ExtendedLogging.Value)
+        //     return;
         Logger.LogInfo(message);
     }
 }

@@ -36,13 +36,27 @@ public class CoilDeathTimer : NetworkBehaviour
             CounterHeads.Instance.LogInfoIfExtendedLogging("CoilDeathTimer::SetDead called on a non-server");
             return;
         }
-        
-        double warningAudioDuration = 4.8f + (Random.value * 0.25f);
-        SendAudioWarningDurationToEveryone(warningAudioDuration);
-        
-        _dieAt = Time.fixedTimeAsDouble + warningAudioDuration;
-        _coil.SetCoilheadOnCooldownServerRpc(true);
-        CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilDeathTimer::SetDead on server: {IsServer}, dieAt: {_dieAt}, warningAudioDuration: {warningAudioDuration}");
+
+        if (CounterHeads.SyncedConfig.Get().CoilsExplode)
+        {
+            double minAudioDur = CounterHeads.SyncedConfig.Get().MinTimeUntilExplosion;
+            double warningAudioDuration = Random.value * (CounterHeads.SyncedConfig.Get().MaxTimeUntilExplosion - minAudioDur) + minAudioDur;
+            SendAudioWarningDurationToEveryone(warningAudioDuration);
+            
+            _dieAt = Time.fixedTimeAsDouble + warningAudioDuration;
+            
+            if (CounterHeads.SyncedConfig.Get().CoilStunOnDeath)
+            {
+                _coil.SetCoilheadOnCooldownClientRpc(true);
+            }
+            
+            CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilDeathTimer::SetDead on server: {IsServer}, dieAt: {_dieAt}, warningAudioDuration: {warningAudioDuration}");
+        }
+        else
+        {
+            CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilDeathTimer::SetDead on server: {IsServer}, dieAt: {_dieAt}. Explosion config disabled so we're just killing the coilhead");
+            KillCoil();
+        }
     }
 
     public bool MarkedForDeath()
@@ -68,15 +82,18 @@ public class CoilDeathTimer : NetworkBehaviour
 
     public void KillCoil()
     {
+        _coil.KillEnemyOnOwnerClient(true);
+        
+        if (!CounterHeads.SyncedConfig.Get().CoilsExplode)
+            return;
+        
         const float killRange = 1f;
         const float damageRange = 4f;
-        int nonLethalDamage = CounterHeads.ConfigManager.ExplosionDamage.Value;
+        int nonLethalDamage = CounterHeads.SyncedConfig.Get().ExplosionDamage;
         const float physicsForce = 25f;
         
         var pos = _coil.serverPosition;
         SendExplosionEffectToEveryone(pos, killRange: killRange, damageRange: damageRange, nonLethalDamage: nonLethalDamage, physicsForce: physicsForce);
-        
-        _coil.KillEnemyOnOwnerClient(true);
     }
  
     private void SetupAudioLoop(double duration)
