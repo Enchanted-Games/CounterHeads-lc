@@ -12,8 +12,9 @@ public class CoilDeathTimer : NetworkBehaviour
     private const float StartingPitch = 0.8f;
     private const float EndingPitch = 1.2f;
 
-    private double _warningAudioStopAt = -1f;
-    private double _dieAt = -1;
+    private double _warningAudioStopAt = -1d;
+    private double _warningDuration = -1d;
+    private double _dieAt = -1d;
     private SpringManAI _coil = null!;
     private AudioSource _deathWarningSource = null!;
     private AudioClip? _deathWarningAudio;
@@ -66,10 +67,7 @@ public class CoilDeathTimer : NetworkBehaviour
 
     public void Update()
     {
-        if (_warningAudioStopAt >= 0 && _warningAudioStopAt <= Time.fixedTimeAsDouble)
-        {
-            StopPlayingAudio();
-        }
+        UpdateAudio();
         
         if(!IsServer) return;
         if(!_coil) return;
@@ -95,10 +93,26 @@ public class CoilDeathTimer : NetworkBehaviour
         var pos = _coil.serverPosition;
         SendExplosionEffectToEveryone(pos, killRange: killRange, damageRange: damageRange, nonLethalDamage: nonLethalDamage, physicsForce: physicsForce);
     }
- 
+
+    private void UpdateAudio()
+    {
+        if (_warningAudioStopAt < 0)
+            return;
+        
+        double timeUntilDeath = _warningAudioStopAt - Time.fixedTimeAsDouble;
+        double normalisedTime = timeUntilDeath / _warningDuration;
+        _deathWarningSource.pitch = (float) (EndingPitch * (1 - normalisedTime) + StartingPitch * normalisedTime);
+            
+        if (_warningAudioStopAt <= Time.fixedTimeAsDouble)
+        {
+            StopPlayingAudio();
+        }
+    }
+    
     private void SetupAudioLoop(double duration)
     {
-        _warningAudioStopAt = Time.fixedTimeAsDouble + duration;
+        _warningDuration = duration;
+        _warningAudioStopAt = Time.fixedTimeAsDouble + _warningDuration;
         _deathWarningSource.loop = true;
         _deathWarningSource.volume = 5f;
         _deathWarningSource.pitch = 0.7f;
