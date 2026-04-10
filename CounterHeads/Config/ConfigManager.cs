@@ -2,17 +2,69 @@
 
 namespace CounterHeads.Config;
 
-public class ConfigManager
+public class ConfigManager(ConfigFile config)
 {
-    public ConfigEntry<bool> ExtendedLogging;
+    private const string DamageSection = "Damage";
+    private const string BehaviourSection = "Behaviour";
+    private const string DebuggingSection = "Debugging";
     
-    public ConfigManager(ConfigFile config)
-    {
-        ExtendedLogging = config.Bind(
-            "Debugging",
-            "Extended Logging",
-            false,
-            "Enable extra logging for debugging"
-        );
-    }
+    // - Damage
+    public readonly ConfigEntry<int> CoilHealth = config.Bind(
+        DamageSection,
+        "Coilhead health",
+        3,
+        "How much health coilheads spawn with. 3 is the vanilla default, so setting this value to 3 will not modify coilhead health. This is useful if, for example, you want to use the coilhead health from another mod instead of overriding it"
+    );
+    
+    public readonly ConfigEntry<string> CoilWeapons = config.Bind(
+        DamageSection,
+        "Coilhead weapons",
+        "['kitchen knife',2]",
+        "Configure which weapons can be used against coilheads and how much damage they should deal.\nEntries are surrounded by square brackets [] and seperated by a comma. Each entry can contain either a weapon name like so: `['shotgun']`, or a weapon name and damage amount seperated by a colon, like so: `['shotgun':2]`. Weapon names should be as they appear in the top right of the screen while holding them, all in lower case\n\nAn example config to make shovels deal 2 damage and knives deal 1 could look like this: `['shovel':2],['kitchen knife':1]`"
+    );
+    
+    // - Behaviour
+    public readonly ConfigEntry<bool> CoilsExplode = config.Bind(
+        BehaviourSection,
+        "Coilheads explode",
+        true,
+        "Whether or not coilheads explode on death. If enabled, coilheads will start playing a warning sound which will get higher pitch until eventually exploding. If disabled, coilheads will vanish on death and no warning sound will play"
+    );
+    
+    public readonly ConfigEntry<bool> CoilStunOnDeath = config.Bind(
+        BehaviourSection,
+        "Stun coilheads on death",
+        true,
+        "Whether or not coilheads should be stunned when dealing enough damage to them. If disabled, coilheads will still be able to chase you until they explode!\nOnly takes effect when 'Coilheads explode' is enabled"
+    );
+    
+    public readonly ConfigEntry<int> ExplosionDamage = config.Bind(
+        BehaviourSection,
+        "Explosion damage",
+        45,
+        "Maximum amount of damage coilhead explosions can inflict\nOnly takes effect when 'Coilheads explode' is enabled"
+    );
+    
+    public readonly ConfigEntry<double> MinTimeUntilExplosion = config.Bind(
+        BehaviourSection,
+        "Min time until explosion",
+        0.4d,
+        "Minimum amount of time in seconds between dealing enough damage to a coilhead and it exploding\nOnly takes effect when 'Coilheads explode' is enabled"
+    );
+    
+    public readonly ConfigEntry<double> MaxTimeUntilExplosion = config.Bind(
+        BehaviourSection,
+        "Max time until explosion",
+        0.7d,
+        "Maximum amount of time in seconds between dealing enough damage to a coilhead and it exploding\nOnly takes effect when 'Coilheads explode' is enabled"
+    );
+    
+    
+    // - Debugging
+    public readonly ConfigEntry<bool> ExtendedLogging = config.Bind(
+        DebuggingSection,
+        "Extended logging",
+        false,
+        "Enable extra logging for debugging"
+    );
 }
