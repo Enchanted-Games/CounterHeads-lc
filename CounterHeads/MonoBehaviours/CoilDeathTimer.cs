@@ -12,8 +12,8 @@ public class CoilDeathTimer : NetworkBehaviour
     private const float StartingPitch = 0.8f;
     private const float EndingPitch = 1.2f;
 
-    private float _warningAudioStopAt = -1f;
-    private float _dieAt = -1;
+    private double _warningAudioStopAt = -1f;
+    private double _dieAt = -1;
     private SpringManAI _coil = null!;
     private AudioSource _deathWarningSource = null!;
     private AudioClip? _deathWarningAudio;
@@ -37,17 +37,17 @@ public class CoilDeathTimer : NetworkBehaviour
             return;
         }
         
-        float warningAudioDuration = 4.8f + (Random.value * 0.25f);
+        double warningAudioDuration = 4.8f + (Random.value * 0.25f);
         SendAudioWarningDurationToEveryone(warningAudioDuration);
         
-        _dieAt = Time.fixedTime + warningAudioDuration;
+        _dieAt = Time.fixedTimeAsDouble + warningAudioDuration;
         _coil.SetCoilheadOnCooldownServerRpc(true);
         CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilDeathTimer::SetDead on server: {IsServer}, dieAt: {_dieAt}, warningAudioDuration: {warningAudioDuration}");
     }
  
-    private void SetupAudioLoop(float duration)
+    private void SetupAudioLoop(double duration)
     {
-        _warningAudioStopAt = Time.fixedTime + duration;
+        _warningAudioStopAt = Time.fixedTimeAsDouble + duration;
         _deathWarningSource.loop = true;
         _deathWarningSource.volume = 5f;
         _deathWarningSource.pitch = 0.7f;
@@ -69,7 +69,7 @@ public class CoilDeathTimer : NetworkBehaviour
 
     public void Update()
     {
-        if (_warningAudioStopAt >= 0 && _warningAudioStopAt <= Time.fixedTime)
+        if (_warningAudioStopAt >= 0 && _warningAudioStopAt <= Time.fixedTimeAsDouble)
         {
             StopPlayingAudio();
         }
@@ -77,20 +77,19 @@ public class CoilDeathTimer : NetworkBehaviour
         if(!IsServer) return;
         if(!_coil) return;
         
-        if(!MarkedForDeath() || Time.fixedTime < _dieAt) return;
+        if(!MarkedForDeath() || Time.fixedTimeAsDouble < _dieAt) return;
         
-        CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilDeathTimer::Update on server: {IsServer}. dieAt: {_dieAt}, fixedTime: {Time.fixedTime}, coilExists: {_coil}");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilDeathTimer::Update on server: {IsServer}. dieAt: {_dieAt}, fixedTime: {Time.fixedTimeAsDouble}, coilExists: {_coil}");
 
         const float killRange = 1f;
         const float damageRange = 4f;
-        const int nonLethalDamage = 35;
+        int nonLethalDamage = CounterHeads.ConfigManager.ExplosionDamage.Value;
         const float physicsForce = 25f;
         
         var pos = _coil.serverPosition;
         SendExplosionEffectToEveryone(pos, killRange: killRange, damageRange: damageRange, nonLethalDamage: nonLethalDamage, physicsForce: physicsForce);
         
         _coil.KillEnemyOnOwnerClient(true);
-
         _dieAt = -1;
     }
 
@@ -112,7 +111,7 @@ public class CoilDeathTimer : NetworkBehaviour
         NetworkManager.CustomMessagingManager.UnregisterNamedMessageHandler(Messages.CoilDeathTimer_AudioWarningToEveryoneMessage);
     }
     
-    public void SendAudioWarningDurationToEveryone(float duration)
+    public void SendAudioWarningDurationToEveryone(double duration)
     {
         var buffer = new FastBufferWriter(1024, Allocator.Temp);
         buffer.WriteValue(duration);
@@ -123,7 +122,7 @@ public class CoilDeathTimer : NetworkBehaviour
     {
         try
         {
-            data.ReadValue(out float duration);
+            data.ReadValue(out double duration);
 
             CounterHeads.Instance.LogInfoIfExtendedLogging($"{nameof(ReceiveAudioWarningDuration)} received: {duration}");
             SetupAudioLoop(duration);

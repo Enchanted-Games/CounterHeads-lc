@@ -41,7 +41,7 @@ public class SpringManAI_EnemyAIPatch
         
         CounterHeads.Instance.LogInfoIfExtendedLogging($"new health: {coil.enemyHP}");
         
-        if (coil.enemyHP > 0)
+        if (coil.enemyHP > 0 || !coil.IsOwner)
             return;
         
         if (deathTimer != null)
