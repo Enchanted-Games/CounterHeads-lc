@@ -1,24 +1,41 @@
 ﻿using CounterHeads.Config.Value;
+using Unity.Netcode;
 
 namespace CounterHeads.Config;
 
-public class SyncedConfigState(
-    int coilHealth,
-    WeaponMap coilWeapons,
-    bool coilsExplode,
-    bool coilStunOnDeath,
-    int explosionDamage,
-    double minTimeUntilExplosion,
-    double maxTimeUntilExplosion
-)
+public class SyncedConfigState : INetworkSerializable
 {
-    public readonly int CoilHealth = coilHealth;
-    public readonly WeaponMap CoilWeapons = coilWeapons;
-    public readonly bool CoilsExplode = coilsExplode;
-    public readonly bool CoilStunOnDeath = coilStunOnDeath;
-    public readonly int ExplosionDamage = explosionDamage;
-    public readonly double MinTimeUntilExplosion = minTimeUntilExplosion;
-    public readonly double MaxTimeUntilExplosion = maxTimeUntilExplosion;
+    public int CoilHealth;
+    public WeaponMap CoilWeapons;
+    public bool CoilsExplode;
+    public bool CoilStunOnDeath;
+    public int ExplosionDamage;
+    public double MinTimeUntilExplosion;
+    public double MaxTimeUntilExplosion;
+
+    public SyncedConfigState(
+        int coilHealth,
+        WeaponMap coilWeapons,
+        bool coilsExplode,
+        bool coilStunOnDeath,
+        int explosionDamage,
+        double minTimeUntilExplosion,
+        double maxTimeUntilExplosion
+    )
+    {
+        CoilHealth = coilHealth;
+        CoilWeapons = coilWeapons;
+        CoilsExplode = coilsExplode;
+        CoilStunOnDeath = coilStunOnDeath;
+        ExplosionDamage = explosionDamage;
+        MinTimeUntilExplosion = minTimeUntilExplosion;
+        MaxTimeUntilExplosion = maxTimeUntilExplosion;
+    }
+    
+    public SyncedConfigState()
+    {
+        // for network serializable
+    }
     
     public static SyncedConfigState CreateFromCurrentLocal()
     {
@@ -31,5 +48,29 @@ public class SyncedConfigState(
             CounterHeads.LocalConfig.MinTimeUntilExplosion.Value,
             CounterHeads.LocalConfig.MaxTimeUntilExplosion.Value
         );
+    }
+
+    void INetworkSerializable.NetworkSerialize<T>(BufferSerializer<T> serializer)
+    {
+        serializer.SerializeValue(ref CoilHealth);
+        serializer.SerializeNetworkSerializable(ref CoilWeapons);
+        serializer.SerializeValue(ref CoilsExplode);
+        serializer.SerializeValue(ref CoilStunOnDeath);
+        serializer.SerializeValue(ref ExplosionDamage);
+        serializer.SerializeValue(ref MinTimeUntilExplosion);
+        serializer.SerializeValue(ref MaxTimeUntilExplosion);
+    }
+
+    public void LogCurrentState()
+    {
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"My current config state is:");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilHealth: {CoilHealth}");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilWeapons: {CoilWeapons}");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilsExplode: {CoilsExplode}");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilStunOnDeath: {CoilStunOnDeath}");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"ExplosionDamage: {ExplosionDamage}");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"MinTimeUntilExplosion: {MinTimeUntilExplosion}");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"MaxTimeUntilExplosion: {MaxTimeUntilExplosion}");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"------");
     }
 }

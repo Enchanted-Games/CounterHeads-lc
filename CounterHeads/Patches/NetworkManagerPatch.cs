@@ -15,7 +15,7 @@ internal class NetworkManagerPatch
         Messages.RegisterGlobalMessages();
     }
     
-    [HarmonyPatch(typeof(GameNetworkManager), "SetInstanceValuesBackToDefault")]
+    [HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.SetInstanceValuesBackToDefault))]
     [HarmonyPostfix]
     public static void SetInstanceValuesBackToDefault()
     {

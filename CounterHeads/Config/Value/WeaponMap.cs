@@ -11,9 +11,15 @@ public class WeaponMap : INetworkSerializable
 {
     private Weapon[] _weapons;
 
-    WeaponMap(IEnumerable<Weapon> weapons)
+    public WeaponMap(IEnumerable<Weapon> weapons)
     {
         _weapons = weapons.ToArray();
+    }
+
+    public WeaponMap()
+    {
+        // for network serializable
+        _weapons = [];
     }
 
     public static WeaponMap ParseWeaponConfig(string configString)
@@ -100,20 +106,23 @@ public class WeaponMap : INetworkSerializable
     void INetworkSerializable.NetworkSerialize<T>(BufferSerializer<T> serializer)
     {
         int length = 0;
-        Weapon[] tempWeapons;
-        if (!serializer.IsReader)
+        Weapon[] tempWeapons = new Weapon[length];
+        if (serializer.IsWriter)
         {
             tempWeapons = _weapons;
             length = tempWeapons.Length;
         }
-        else
+        
+        serializer.SerializeValue(ref length);
+        
+        if (!serializer.IsWriter)
         {
             tempWeapons = new Weapon[length];
         }
-        serializer.SerializeValue(ref length);
 
         for (int n = 0; n < length; ++n)
         {
+            CounterHeads.Instance.LogInfoIfExtendedLogging($"serialize: i {n}, length: {length}, arrayLength: {tempWeapons.Length}");
             serializer.SerializeValue(ref tempWeapons[n]);
         }
 

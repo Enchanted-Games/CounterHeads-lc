@@ -12,6 +12,12 @@ public class SpringManAI_EnemyAIPatch
     [HarmonyPostfix]
     static void Awake_Postfix(EnemyAI __instance)
     {
+        if(!CounterHeads.SyncedConfig.ServerHasCounterHeads)
+        {
+            CounterHeads.Instance.LogInfoIfExtendedLogging($"{nameof(Awake_Postfix)} returning early. Server does not have counterheads installed");
+            return;
+        }
+        
         SpringManAI? coil = __instance as SpringManAI;
         if(coil == null) return;
         
@@ -24,6 +30,12 @@ public class SpringManAI_EnemyAIPatch
     [HarmonyPostfix]
     static void Start_Postfix(EnemyAI __instance)
     {
+        if(!CounterHeads.SyncedConfig.ServerHasCounterHeads)
+        {
+            CounterHeads.Instance.LogInfoIfExtendedLogging($"{nameof(Start_Postfix)} returning early. Server does not have counterheads installed");
+            return;
+        }
+        
         SpringManAI? coil = __instance as SpringManAI;
         if(coil == null) return;
 
@@ -38,12 +50,18 @@ public class SpringManAI_EnemyAIPatch
     [HarmonyPostfix]
     static void HitEnemy_Postfix(EnemyAI __instance, int force, PlayerControllerB playerWhoHit, bool playHitSFX, int hitID)
     {
+        if(!CounterHeads.SyncedConfig.ServerHasCounterHeads)
+        {
+            CounterHeads.Instance.LogInfoIfExtendedLogging($"{nameof(HitEnemy_Postfix)} returning early. Server does not have counterheads installed");
+            return;
+        }
+        
         SpringManAI? coil = __instance as SpringManAI;
         if(coil == null) return;
         if(playerWhoHit == null) return;
 
         GrabbableObject itemHitWith = playerWhoHit.currentlyHeldObjectServer;
-        CounterHeads.Instance.LogInfoIfExtendedLogging($"SpringManAI hit. force: {force}, player: {playerWhoHit.playerUsername}, health: {coil.enemyHP}, isDead: {coil.isEnemyDead}, isOwner: {coil.IsOwner}, playerItem: {itemHitWith.itemProperties.itemName}, playerWhoHitIsClient: {playerWhoHit.IsClient}, coilIsClient: {coil.IsClient}");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"SpringManAI hit. force: {force}, player: {playerWhoHit.playerUsername}, health: {coil.enemyHP}, isDead: {coil.isEnemyDead}, isOwner: {coil.IsOwner}, isServer: {coil.IsServer}, playerItem: {itemHitWith.itemProperties.itemName}, playerWhoHitIsClient: {playerWhoHit.IsClient}, coilIsClient: {coil.IsClient}");
         
         CoilDeathTimer deathTimer = coil.GetComponent<CoilDeathTimer>();
         
@@ -60,7 +78,7 @@ public class SpringManAI_EnemyAIPatch
         
         CounterHeads.Instance.LogInfoIfExtendedLogging($"new health: {coil.enemyHP}, damagedBy: {damage}");
         
-        if (coil.enemyHP > 0 || !coil.IsOwner)
+        if (coil.enemyHP > 0 || !coil.IsServer)
             return;
         
         if (deathTimer != null)
