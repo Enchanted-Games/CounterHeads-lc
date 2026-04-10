@@ -126,7 +126,6 @@ public class WeaponMap : INetworkSerializable
 
         for (int n = 0; n < length; ++n)
         {
-            CounterHeads.Instance.LogInfoIfExtendedLogging($"serialize: i {n}, length: {length}, arrayLength: {tempWeapons.Length}");
             serializer.SerializeValue(ref tempWeapons[n]);
         }
 
