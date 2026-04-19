@@ -5,6 +5,7 @@ namespace CounterHeads.Config;
 
 public class SyncedConfigState : INetworkSerializable
 {
+    public int ServerConfigVersion;
     public int CoilHealth;
     public WeaponMap CoilWeapons;
     public bool CoilsExplode;
@@ -14,6 +15,7 @@ public class SyncedConfigState : INetworkSerializable
     public double MaxTimeUntilExplosion;
 
     public SyncedConfigState(
+        int serverConfigVersion,
         int coilHealth,
         WeaponMap coilWeapons,
         bool coilsExplode,
@@ -23,6 +25,7 @@ public class SyncedConfigState : INetworkSerializable
         double maxTimeUntilExplosion
     )
     {
+        ServerConfigVersion = serverConfigVersion;
         CoilHealth = coilHealth;
         CoilWeapons = coilWeapons;
         CoilsExplode = coilsExplode;
@@ -40,6 +43,7 @@ public class SyncedConfigState : INetworkSerializable
     public static SyncedConfigState CreateFromCurrentLocal()
     {
         return new SyncedConfigState(
+            LocalConfig.ModConfigVersion,
             CounterHeads.LocalConfig.CoilHealth.Value,
             WeaponMap.ParseWeaponConfig(CounterHeads.LocalConfig.CoilWeapons.Value),
             CounterHeads.LocalConfig.CoilsExplode.Value,
@@ -52,6 +56,7 @@ public class SyncedConfigState : INetworkSerializable
 
     void INetworkSerializable.NetworkSerialize<T>(BufferSerializer<T> serializer)
     {
+        serializer.SerializeValue(ref ServerConfigVersion);
         serializer.SerializeValue(ref CoilHealth);
         serializer.SerializeNetworkSerializable(ref CoilWeapons);
         serializer.SerializeValue(ref CoilsExplode);
@@ -64,6 +69,7 @@ public class SyncedConfigState : INetworkSerializable
     public void LogCurrentState()
     {
         CounterHeads.Instance.LogInfoIfExtendedLogging($"My current config state is:");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"ServerConfigVersion: {ServerConfigVersion}");
         CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilHealth: {CoilHealth}");
         CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilWeapons: {CoilWeapons}");
         CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilsExplode: {CoilsExplode}");

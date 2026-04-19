@@ -4,6 +4,8 @@ namespace CounterHeads.Config;
 
 public class LocalConfig(ConfigFile config)
 {
+    public const int ModConfigVersion = 1;
+    
     private const string DamageSection = "Damage";
     private const string BehaviourSection = "Behaviour";
     private const string DebuggingSection = "Debugging";
