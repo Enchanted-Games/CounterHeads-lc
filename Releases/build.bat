@@ -9,6 +9,8 @@ REM Copy metadata files to the releaseFiles directory
 copy /y ..\Art\icon.png .\releaseFiles\
 copy /y ..\Art\manifest.json .\releaseFiles\
 copy /y ..\Art\README.md .\releaseFiles\
+copy /y ..\Art\LICENSE .\releaseFiles\
+copy /y ..\Art\counter-heads-assets .\releaseFiles\
 copy /y ..\CHANGELOG.md .\releaseFiles\
 
 REM Copy the built dll to the releaseFiles directory
