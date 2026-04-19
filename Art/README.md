@@ -5,10 +5,11 @@ Adds some more counter play to coilheads by letting you kill them with kitchen k
 ## Features
 
 - Kitchen knives can be used to kill coilheads after 3 hits
-- Shotguns can also be used but take 4 shots to kill
-- Almost every aspect of the mod is configurable, see the config section for more info
+- Shotguns can also be used but take 4 shots to kill.
+  - This is intended to be a 'last resort' way to kill coilheads, as to not take away the use of kitchen knives since shotguns are much easier to get
 - Coilheads explode when killing them, inspired by the in-game bestiary log
    - *They have been known to combust into flames when being dissected*
+- Almost every aspect of the mod is configurable, see the config section for more info
 - The config is automatically synced from the host to clients, so you don't need to fiddle around making sure everyone has the same config
 
 
