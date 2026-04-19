@@ -37,8 +37,10 @@ If the host does not have the mod installed and a client does, the mod will auto
 <summary><b>Damage</b></summary>
 <ul>
 <li>Coilhead health (default <code>8</code>) - How much health coilheads spawn with. 3 is the vanilla default, so setting this value to 3 will not modify coilhead health. This is useful if, for example, you want to use the coilhead health from another mod instead of overriding it</li>
-<li>Coilhead weapons (default <code>{'kitchen knife':3},{'shotgun':2}</code>) - Which weapons can be used against coilheads and how much damage they should deal.</li>
-**Weapon config format:**
-Entries are surrounded by curly brackets <code>{}</code> and seperated by a comma. Each entry can contain either a weapon name like so: <code>{'shotgun'}</code> (in this case the default damage amount for that item will be used), or a weapon name and damage amount seperated by a colon, like so: <code>{'shotgun':2}</code>. Weapon names should be as they appear in the top right of the screen while holding them, if the weapon name contains a <code>:</code> or <code>'</code> character, you can escape them like so: <code>\:</code> or <code>\'</code> An example config to make shovels deal 2 damage and knives deal 1 could look like this: <code>{'shovel':2},{'kitchen knife':1}</code>
+<li>Coilhead weapons (default <code>{'kitchen knife':3},{'shotgun':2}</code>) - Which weapons can be used against coilheads and how much damage they should deal.
+    <ul>
+        <li>Entries are surrounded by curly brackets <code>{}</code> and seperated by a comma. Each entry can contain either a weapon name like so: <code>{'shotgun'}</code> (in this case the default damage amount for that item will be used), or a weapon name and damage amount seperated by a colon, like so: <code>{'shotgun':2}</code>. Weapon names should be as they appear in the top right of the screen while holding them, if the weapon name contains a <code>:</code> or <code>'</code> character, you can escape them like so: <code>\:</code> or <code>\'</code> An example config to make shovels deal 2 damage and knives deal 1 could look like this: <code>{'shovel':2},{'kitchen knife':1}</code></li>
+    </ul>
+</li>
 </ul>
 </details>
