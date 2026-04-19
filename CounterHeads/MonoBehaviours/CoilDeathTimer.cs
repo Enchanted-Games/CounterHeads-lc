@@ -86,7 +86,7 @@ public class CoilDeathTimer : NetworkBehaviour
             return;
         
         const float killRange = 1f;
-        const float damageRange = 4f;
+        float damageRange = CounterHeads.SyncedConfig.Get().ExplosionRange;
         int nonLethalDamage = CounterHeads.SyncedConfig.Get().ExplosionDamage;
         const float physicsForce = 25f;
         

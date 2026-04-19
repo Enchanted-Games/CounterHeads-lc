@@ -46,10 +46,20 @@ public class LocalConfig(ConfigFile config)
     public readonly ConfigEntry<int> ExplosionDamage = config.Bind(
         BehaviourSection,
         "Explosion damage",
-        45,
+        60,
         new ConfigDescription(
             "Maximum amount of damage coilhead explosions can inflict\nOnly takes effect when 'Coilheads explode' is enabled",
             new AcceptableValueRange<int>(0, 200)
+        )
+    );
+    
+    public readonly ConfigEntry<float> ExplosionRange = config.Bind(
+        BehaviourSection,
+        "Furthest distance coilhead explosions can do damage from",
+        5f,
+        new ConfigDescription(
+            "Minimum amount of time in seconds between dealing enough damage to a coilhead and it exploding\nOnly takes effect when 'Coilheads explode' is enabled",
+            new AcceptableValueRange<float>(0f, 30f)
         )
     );
     

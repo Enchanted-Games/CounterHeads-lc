@@ -11,6 +11,7 @@ public class SyncedConfigState : INetworkSerializable
     public bool CoilsExplode;
     public bool CoilStunOnDeath;
     public int ExplosionDamage;
+    public float ExplosionRange;
     public double MinTimeUntilExplosion;
     public double MaxTimeUntilExplosion;
 
@@ -21,6 +22,7 @@ public class SyncedConfigState : INetworkSerializable
         bool coilsExplode,
         bool coilStunOnDeath,
         int explosionDamage,
+        float explosionRange,
         double minTimeUntilExplosion,
         double maxTimeUntilExplosion
     )
@@ -31,6 +33,7 @@ public class SyncedConfigState : INetworkSerializable
         CoilsExplode = coilsExplode;
         CoilStunOnDeath = coilStunOnDeath;
         ExplosionDamage = explosionDamage;
+        ExplosionRange = explosionRange;
         MinTimeUntilExplosion = minTimeUntilExplosion;
         MaxTimeUntilExplosion = maxTimeUntilExplosion;
     }
@@ -49,6 +52,7 @@ public class SyncedConfigState : INetworkSerializable
             CounterHeads.LocalConfig.CoilsExplode.Value,
             CounterHeads.LocalConfig.CoilStunOnDeath.Value,
             CounterHeads.LocalConfig.ExplosionDamage.Value,
+            CounterHeads.LocalConfig.ExplosionRange.Value,
             CounterHeads.LocalConfig.MinTimeUntilExplosion.Value,
             CounterHeads.LocalConfig.MaxTimeUntilExplosion.Value
         );
@@ -62,6 +66,7 @@ public class SyncedConfigState : INetworkSerializable
         serializer.SerializeValue(ref CoilsExplode);
         serializer.SerializeValue(ref CoilStunOnDeath);
         serializer.SerializeValue(ref ExplosionDamage);
+        serializer.SerializeValue(ref ExplosionRange);
         serializer.SerializeValue(ref MinTimeUntilExplosion);
         serializer.SerializeValue(ref MaxTimeUntilExplosion);
     }
@@ -75,6 +80,7 @@ public class SyncedConfigState : INetworkSerializable
         CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilsExplode: {CoilsExplode}");
         CounterHeads.Instance.LogInfoIfExtendedLogging($"CoilStunOnDeath: {CoilStunOnDeath}");
         CounterHeads.Instance.LogInfoIfExtendedLogging($"ExplosionDamage: {ExplosionDamage}");
+        CounterHeads.Instance.LogInfoIfExtendedLogging($"ExplosionRange: {ExplosionRange}");
         CounterHeads.Instance.LogInfoIfExtendedLogging($"MinTimeUntilExplosion: {MinTimeUntilExplosion}");
         CounterHeads.Instance.LogInfoIfExtendedLogging($"MaxTimeUntilExplosion: {MaxTimeUntilExplosion}");
         CounterHeads.Instance.LogInfoIfExtendedLogging($"------");
